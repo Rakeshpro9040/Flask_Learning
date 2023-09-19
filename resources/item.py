@@ -3,11 +3,13 @@ from flask import request
 from flask.views import MethodView
 from flask_smorest import Blueprint,abort
 from db import items, stores
+from schemas import ItemSchema, ItemUpdateSchema
 
 blp = Blueprint("items", __name__, description="Operations on items")
 
 @blp.route("/item/<string:item_id>")
 class Item(MethodView):
+    @blp.response(200, ItemSchema)
     def get(self, item_id):
         try:
             return items[item_id]
@@ -21,11 +23,11 @@ class Item(MethodView):
         except KeyError:
             abort(404, message="Item not found")
 
-    def put(self, item_id):
-        item_data = request.get_json()
-        if "price" not in item_data or "name" not in item_data:
-            abort(400, message="Bad request. Ensure 'price' and 'name' are included in the JSON payload")
-        
+    @blp.arguments(ItemUpdateSchema)
+    @blp.response(200, ItemSchema)
+    # Order matters - make sure to put response decorator after the argument decorator
+    def put(self, item_data, item_id):
+        # Here arg decorator param 'item_data' goes before root arg 'item_id'
         try:
             item = items[item_id]
             item |= item_data
@@ -36,20 +38,17 @@ class Item(MethodView):
 
 @blp.route("/item/")
 class ItemList(MethodView):
+    @blp.response(200, ItemSchema(many=True))
     def get(self):
-        return {"items": list(items.values())}
+        # Note now this is returning list of items instead of object with items
+        # This may impact how client receives it, but tradeoff is simpler validation
+        return items.values()
 
-    def post(self):
-        item_data = request.get_json()
-        # In addition to this data validation can be added using marshmallow lib!
-        if (
-            "price" not in item_data
-            or "store_id" not in item_data
-            or "name" not in item_data
-        ):
-            abort(404, 
-                message="Bad Request! Ensure 'price', 'store_id', 'name' are included in JSON Payload.",)
-
+    @blp.arguments(ItemSchema)
+    @blp.response(201, ItemSchema)
+    def post(self, item_data):
+        # Here the item_data gets passed from ItemSchema post validation
+        # marshmallow can't validate this, but DB checks can replace this!
         for item in items.values():
             if (
                 item_data["name"] == item["name"]

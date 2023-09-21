@@ -1,20 +1,27 @@
 from marshmallow import Schema, fields
 
-#  This is for item create
-class ItemSchema(Schema):
+# This is for item create
+# Here we dont need store_id as this schema will be used in nesting inside store
+class PlainItemSchema(Schema):
     id = fields.Str(dump_only=True)
     name = fields.Str(required=True)
     price = fields.Float(required=True)
-    store_id = fields.Str(required=True)
 
 class ItemUpdateSchema(Schema):
     name = fields.Str()
     price = fields.Float()
 
 # This is for store create
-class StoreSchema(Schema):
+class PlainStoreSchema(Schema):
     id = fields.Str(dump_only=True)
     name = fields.Str(required=True)
 
 class StoreUpdateSchema(Schema):
     name = fields.Str()
+
+class ItemSchema(PlainItemSchema):
+    store_id = fields.Int(required=True, load_only=True)
+    store = fields.Nested(PlainStoreSchema(), dump_only=True)
+
+class StoreSchema(PlainStoreSchema):
+    items = fields.List(fields.Nested(PlainItemSchema(), dump_only=True))

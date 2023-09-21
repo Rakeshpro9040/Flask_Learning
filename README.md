@@ -1,20 +1,19 @@
 # Key URLs
 https://github.com/tecladocode/rest-apis-flask-python/tree/develop/project
+<br>
 https://blog.teclado.com/python-dictionary-merge-update-operators/
 
 # Docker Build
-docker build -t rest-apis-flask-python .
-docker build -t flask-smorest-api . 
+docker build -t rest-apis-flask-teclado .
 - Here t is the tag
 
 # Run container with existing code
-docker run -dp 5005:5000 rest-apis-flask-python
-docker run -dp 5005:5000 flask-smorest-api
+docker run -dp 5005:5000 rest-apis-flask-teclado
 - Here d = run as daemon/background; p = port
 - 5005 = local machine port; 5000 = docker container port
 
 # Run container with volume (host folder synxed with container folder)
-docker run -dp 5005:5000 -w /app -v "$(pwd):/app" flask-smorest-api
+docker run -dp 5005:5000 -w /app -v "$(pwd):/app" rest-apis-flask-teclado
 - Here w = replace the container /app with host folder 
 - v = is to create mapping bet $(pwd) ie host folder to /app ie container folder
 
@@ -29,3 +28,7 @@ http://localhost:5005/swagger-ui
 - Marshmallow can convert dictionary/object into JSON, so can easily integrate 
 - arguments decorator is for client input validation, post validation it will return a JSON
 - response decorator is for sending the response to client as JSON with validated schema
+
+# SQLAlchemy
+- Implements ORM; Here py attributes=db columns, py object/class=db rows
+- Implements relationships: one-to-many, one-to-one, etc.

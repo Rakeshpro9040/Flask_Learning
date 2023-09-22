@@ -3,6 +3,9 @@ https://github.com/tecladocode/rest-apis-flask-python/tree/develop/project
 <br>
 https://blog.teclado.com/python-dictionary-merge-update-operators/
 
+# Run flask app
+flask run
+
 # Docker Build
 docker build -t rest-apis-flask-teclado .
 - Here t is the tag

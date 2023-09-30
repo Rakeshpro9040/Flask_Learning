@@ -2,7 +2,11 @@ import uuid
 from flask import request
 from flask.views import MethodView
 from flask_smorest import Blueprint,abort
-from db import items, stores
+from sqlalchemy.exc import SQLAlchemyError
+# Here exc is exception, SQLAlchemyError includes all errors captured by SQLAlchemy
+
+from db import db
+from models import ItemModel
 from schemas import ItemSchema, ItemUpdateSchema
 
 blp = Blueprint("items", __name__, description="Operations on items")
@@ -47,19 +51,14 @@ class ItemList(MethodView):
     @blp.arguments(ItemSchema)
     @blp.response(201, ItemSchema)
     def post(self, item_data):
-        # Here the item_data gets passed from ItemSchema post validation
-        # marshmallow can't validate this, but DB checks can replace this!
-        for item in items.values():
-            if (
-                item_data["name"] == item["name"]
-                and item_data["store_id"] == item["store_id"]
-            ):
-                abort(404, message="Item already exists!")
+        item = ItemModel(**item_data)
 
-        if item_data["store_id"] not in stores:
-            abort(404, message="Store not found!")
+        try:
+            db.session.add(item)
+            # This will add to db table
+            db.session.commit()
+            # commit all the transaction
+        except SQLAlchemyError:
+            abort(500, message="An error occured while inserting the item!")
         
-        item_id = uuid.uuid4().hex
-        item = {**item_data, "id": item_id}
-        items[item_id] = item
         return item

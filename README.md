@@ -1,3 +1,5 @@
+# Note: Local repo is available in mac, so practice here!
+
 # Key URLs
 https://github.com/tecladocode/rest-apis-flask-python/tree/develop/project
 https://blog.teclado.com/python-dictionary-merge-update-operators/

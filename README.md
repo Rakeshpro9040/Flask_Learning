@@ -37,3 +37,6 @@ http://localhost:5005/swagger-ui
 # SQLAlchemy
 - Implements ORM; Here py attributes=db columns, py object/class=db rows
 - Implements relationships: one-to-many, one-to-one, etc.
+
+# Misc
+- Test
